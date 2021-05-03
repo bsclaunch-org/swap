@@ -93,10 +93,10 @@ export function CurrencySearch({
       onCurrencySelect(currency)
       onDismiss()
       if (audioPlay) {
-        const audio = document.getElementById('bgMusic') as HTMLAudioElement
-        if (audio) {
-          audio.play()
-        }
+        // const audio = document.getElementById('bgMusic') as HTMLAudioElement
+        // if (audio) {
+        //   audio.play()
+        // }
       }
     },
     [onDismiss, onCurrencySelect, audioPlay]

@@ -8,18 +8,19 @@ interface PageHeaderProps {
   title: ReactNode
   description?: ReactNode
   children?: ReactNode
+  hasSetting?: boolean
 }
 
 const StyledPageHeader = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.colors.borderColor};
-  padding: 16px 24px;
+  padding: 24px;
 `
 
 const Details = styled.div`
   flex: 1;
 `
 
-const PageHeader = ({ title, description, children }: PageHeaderProps) => {
+const PageHeader = ({ title, description, children, hasSetting }: PageHeaderProps) => {
   const TranslateString = useI18n()
   const [onPresentSettings] = useModal(<SettingsModal translateString={TranslateString} />)
 
@@ -28,15 +29,13 @@ const PageHeader = ({ title, description, children }: PageHeaderProps) => {
       <Flex alignItems="center">
         <Details>
           <Heading>{title}</Heading>
-          {description && (
-            <Text fontSize="14px">
-              {description}
-            </Text>
-          )}
+          {description && <Text fontSize="14px">{description}</Text>}
         </Details>
-        <IconButton variant="text" onClick={onPresentSettings} title={TranslateString(1200, 'Settings')}>
-          <TuneIcon width="24px" color="currentColor" />
-        </IconButton>
+        {hasSetting && (
+          <IconButton scale="xs" variant="text" onClick={onPresentSettings} title={TranslateString(1200, 'Settings')}>
+            <TuneIcon width="24px" color="currentColor" />
+          </IconButton>
+        )}
         {/* <IconButton
           variant="text"
           onClick={onPresentRecentTransactions}

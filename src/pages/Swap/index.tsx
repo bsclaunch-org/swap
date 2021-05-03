@@ -1,10 +1,11 @@
 import { CurrencyAmount, JSBI, Token, Trade } from '@pancakeswap-libs/sdk'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { ArrowDown } from 'react-feather'
-import { CardBody, ArrowDownIcon, IconButton, Text } from '@pancakeswap-libs/uikit'
-import { ThemeContext } from 'styled-components'
+import { CardBody, ArrowDownIcon, IconButton, Text, Card as PanCard } from '@pancakeswap-libs/uikit'
+import styled, { ThemeContext } from 'styled-components'
 import AddressInputPanel from 'components/AddressInputPanel'
 import Card, { GreyCard } from 'components/Card'
+
 import { AutoColumn } from 'components/Column'
 import ConfirmSwapModal from 'components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
@@ -36,6 +37,61 @@ import PageHeader from 'components/PageHeader'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import AppBody from '../AppBody'
 
+const TradingViewIframe = styled.iframe`
+  padding: 0px;
+  height: 500px;
+  width: calc(100% - 48px);
+  border: none;
+  margin: 24px;
+`
+
+const TradingViewCard = styled(PanCard)`
+  position: relative;
+  flex-grow: 1;
+  margin: 0 24px 0 0;
+  @media (max-width: 900px) {
+    margin: 0 0 24px 0;
+    width: 100%;
+  }
+`
+
+const TradingViewPairs = [
+  { key: 'BINANCE:BNBBUSD', pair: ['BNB','BUSD']},
+  { key: 'BINANCE:CAKEBUSD', pair: ['CAKE','BUSD']},
+  { key: 'BINANCE:BAKEBUSD', pair: ['BAKE','BUSD']},
+  { key: 'BINANCE:CAKEBNB', pair: ['CAKE','BNB']},
+  { key: 'BINANCE:BAKEBNB', pair: ['BAKE','BNB']},
+  { key: 'BINANCE:BURGERBNB', pair: ['BURGER','BNB']},
+  { key: 'BINANCE:XVSBUSD', pair: ['XVS','BUSD']},
+  { key: 'BINANCE:XVSBNB', pair: ['XVS','BNB']},
+  { key: 'BINANCE:AUDIOBUSD',pair: ['AUDIO','BUSD']},
+  { key: 'BINANCE:DODOBUSD', pair: ['DODO','BUSD']},
+]
+
+const SwapCard = styled(PanCard)`
+  position: relative;
+  width: 436px;
+  @media (max-width: 900px) {
+    width: 100%;
+    max-width: 436px;
+  }
+`
+
+const BodyContainer = styled.div<{align?: string}>`
+  max-width: 1200px;
+  z-index: 5;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding: 0 24px;
+  align-items: flex-start;
+  justify-content: center;
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: center;
+  }
+`
+
 const Swap = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
@@ -43,7 +99,7 @@ const Swap = () => {
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
-    useCurrency(loadedUrlParams?.outputCurrencyId),
+    useCurrency(loadedUrlParams?.outputCurrencyId)
   ]
   const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(false)
   const [isSyrup, setIsSyrup] = useState<boolean>(false)
@@ -84,11 +140,11 @@ const Swap = () => {
   const parsedAmounts = showWrap
     ? {
         [Field.INPUT]: parsedAmount,
-        [Field.OUTPUT]: parsedAmount,
+        [Field.OUTPUT]: parsedAmount
       }
     : {
         [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
-        [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
+        [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount
       }
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
@@ -120,14 +176,14 @@ const Swap = () => {
     tradeToConfirm: undefined,
     attemptingTxn: false,
     swapErrorMessage: undefined,
-    txHash: undefined,
+    txHash: undefined
   })
 
   const formattedAmounts = {
     [independentField]: typedValue,
     [dependentField]: showWrap
       ? parsedAmounts[independentField]?.toExact() ?? ''
-      : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+      : parsedAmounts[dependentField]?.toSignificant(6) ?? ''
   }
 
   const route = trade?.route
@@ -176,7 +232,7 @@ const Swap = () => {
           ...prevState,
           attemptingTxn: false,
           swapErrorMessage: undefined,
-          txHash: hash,
+          txHash: hash
         }))
       })
       .catch((error) => {
@@ -184,7 +240,7 @@ const Swap = () => {
           ...prevState,
           attemptingTxn: false,
           swapErrorMessage: error.message,
-          txHash: undefined,
+          txHash: undefined
         }))
       })
   }, [priceImpactWithoutFee, swapCallback, setSwapState])
@@ -256,20 +312,26 @@ const Swap = () => {
     [onCurrencySelection, checkForSyrup]
   )
 
-  return (
-    <>
-      <TokenWarningModal
-        isOpen={urlLoadedTokens.length > 0 && !dismissTokenWarning}
-        tokens={urlLoadedTokens}
-        onConfirm={handleConfirmTokenWarning}
-      />
-      <SyrupWarningModal
-        isOpen={isSyrup}
-        transactionType={syrupTransactionType}
-        onConfirm={handleConfirmSyrupWarning}
-      />
-      {/* <CardNav /> */}
-      <AppBody>
+  const [tradingViewCode, setTradingViewCode] = useState<string>('')
+  useEffect(() => {
+    const { INPUT, OUTPUT } = currencies
+    if (!INPUT || !OUTPUT) {
+      setTradingViewCode('')
+    } else {
+      const tradingPair = TradingViewPairs.find(p => p.pair.includes(INPUT.symbol ?? '') && p.pair.includes(OUTPUT.symbol ?? ''))
+      setTradingViewCode(tradingPair?.key ?? '')
+    }
+  }, [currencies])
+
+  const tradingCard = (
+    <TradingViewCard>
+      <PageHeader title="Chart" />
+      <TradingViewIframe src={`https://bsclaunch.org/tradingview.html?${tradingViewCode}`} />
+    </TradingViewCard>
+  )
+  const swapCard = (
+    <AutoColumn justify="center">
+      <SwapCard>
         <Wrapper id="swap-page">
           <ConfirmSwapModal
             isOpen={showConfirm}
@@ -284,9 +346,7 @@ const Swap = () => {
             swapErrorMessage={swapErrorMessage}
             onDismiss={handleConfirmDismiss}
           />
-          <PageHeader
-            title='Swap'
-          />
+          <PageHeader title="Swap" hasSetting />
           <CardBody>
             <AutoColumn gap="md">
               <CurrencyInputPanel
@@ -418,7 +478,7 @@ const Swap = () => {
                           attemptingTxn: false,
                           swapErrorMessage: undefined,
                           showConfirm: true,
-                          txHash: undefined,
+                          txHash: undefined
                         })
                       }
                     }}
@@ -445,7 +505,7 @@ const Swap = () => {
                         attemptingTxn: false,
                         swapErrorMessage: undefined,
                         showConfirm: true,
-                        txHash: undefined,
+                        txHash: undefined
                       })
                     }
                   }}
@@ -465,8 +525,27 @@ const Swap = () => {
             </BottomGrouping>
           </CardBody>
         </Wrapper>
-      </AppBody>
+      </SwapCard>
       <AdvancedSwapDetailsDropdown trade={trade} />
+    </AutoColumn>
+  )
+  return (
+    <>
+      <TokenWarningModal
+        isOpen={urlLoadedTokens.length > 0 && !dismissTokenWarning}
+        tokens={urlLoadedTokens}
+        onConfirm={handleConfirmTokenWarning}
+      />
+      <SyrupWarningModal
+        isOpen={isSyrup}
+        transactionType={syrupTransactionType}
+        onConfirm={handleConfirmSyrupWarning}
+      />
+      {/* <CardNav /> */}
+      <BodyContainer>
+        {tradingViewCode && tradingCard}
+        {swapCard}
+      </BodyContainer>
     </>
   )
 }
