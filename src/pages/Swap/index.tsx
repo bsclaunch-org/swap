@@ -1,5 +1,5 @@
-import { CurrencyAmount, JSBI, Token, Trade } from '@pancakeswap-libs/sdk'
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { CurrencyAmount, JSBI, Trade } from '@pancakeswap-libs/sdk'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { ArrowDown } from 'react-feather'
 import { CardBody, ArrowDownIcon, IconButton, Text, Card as PanCard } from '@pancakeswap-libs/uikit'
 import styled, { ThemeContext } from 'styled-components'
@@ -14,13 +14,13 @@ import AdvancedSwapDetailsDropdown from 'components/swap/AdvancedSwapDetailsDrop
 import confirmPriceImpactWithoutFee from 'components/swap/confirmPriceImpactWithoutFee'
 import { ArrowWrapper, BottomGrouping, SwapCallbackError, Wrapper } from 'components/swap/styleds'
 import TradePrice from 'components/swap/TradePrice'
-import TokenWarningModal from 'components/TokenWarningModal'
+// import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
 import ProgressSteps from 'components/ProgressSteps'
 
 import { INITIAL_ALLOWED_SLIPPAGE } from 'constants/index'
 import { useActiveWeb3React } from 'hooks'
-import { useCurrency } from 'hooks/Tokens'
+// import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallbackFromTrade } from 'hooks/useApproveCallback'
 import { useSwapCallback } from 'hooks/useSwapCallback'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
@@ -92,24 +92,24 @@ const BodyContainer = styled.div<{align?: string}>`
 `
 
 const Swap = () => {
-  const loadedUrlParams = useDefaultsFromURLSearch()
+  useDefaultsFromURLSearch()
   const TranslateString = useI18n()
 
   // token warning stuff
-  const [loadedInputCurrency, loadedOutputCurrency] = [
-    useCurrency(loadedUrlParams?.inputCurrencyId),
-    useCurrency(loadedUrlParams?.outputCurrencyId)
-  ]
-  const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(false)
+  // const [loadedInputCurrency, loadedOutputCurrency] = [
+  //   useCurrency(loadedUrlParams?.inputCurrencyId),
+  //   useCurrency(loadedUrlParams?.outputCurrencyId)
+  // ]
+  // const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(false)
   const [isSyrup, setIsSyrup] = useState<boolean>(false)
   const [syrupTransactionType, setSyrupTransactionType] = useState<string>('')
-  const urlLoadedTokens: Token[] = useMemo(
-    () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c instanceof Token) ?? [],
-    [loadedInputCurrency, loadedOutputCurrency]
-  )
-  const handleConfirmTokenWarning = useCallback(() => {
-    setDismissTokenWarning(true)
-  }, [])
+  // const urlLoadedTokens: Token[] = useMemo(
+  //   () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c instanceof Token) ?? [],
+  //   [loadedInputCurrency, loadedOutputCurrency]
+  // )
+  // const handleConfirmTokenWarning = useCallback(() => {
+  //   setDismissTokenWarning(true)
+  // }, [])
 
   const handleConfirmSyrupWarning = useCallback(() => {
     setIsSyrup(false)
@@ -530,11 +530,11 @@ const Swap = () => {
   )
   return (
     <>
-      <TokenWarningModal
+      {/* <TokenWarningModal
         isOpen={urlLoadedTokens.length > 0 && !dismissTokenWarning}
         tokens={urlLoadedTokens}
         onConfirm={handleConfirmTokenWarning}
-      />
+      /> */}
       <SyrupWarningModal
         isOpen={isSyrup}
         transactionType={syrupTransactionType}

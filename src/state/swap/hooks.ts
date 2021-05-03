@@ -260,6 +260,9 @@ export function useDefaultsFromURLSearch():
   const { chainId } = useActiveWeb3React()
   const dispatch = useDispatch<AppDispatch>()
   const parsedQs = useParsedQueryString()
+  if (!parsedQs.outputCurrency) {
+    parsedQs.outputCurrency = '0xe9e7cea3dedca5984780bafc599bd69add087d56' // BUSD
+  }
   const [result, setResult] = useState<
     { inputCurrencyId: string | undefined; outputCurrencyId: string | undefined } | undefined
   >()
