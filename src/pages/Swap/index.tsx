@@ -35,7 +35,6 @@ import useI18n from 'hooks/useI18n'
 import AppButton from 'components/AppButton'
 import PageHeader from 'components/PageHeader'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import AppBody from '../AppBody'
 
 const TradingViewIframe = styled.iframe`
   padding: 0px;
@@ -49,7 +48,7 @@ const TradingViewCard = styled(PanCard)`
   position: relative;
   flex-grow: 1;
   margin: 0 24px 0 0;
-  @media (max-width: 900px) {
+  @media (max-width: 800px) {
     margin: 0 0 24px 0;
     width: 100%;
   }
@@ -71,7 +70,7 @@ const TradingViewPairs = [
 const SwapCard = styled(PanCard)`
   position: relative;
   width: 436px;
-  @media (max-width: 900px) {
+  @media (max-width: 800px) {
     width: 100%;
     max-width: 436px;
   }
@@ -86,7 +85,7 @@ const BodyContainer = styled.div<{align?: string}>`
   padding: 0 24px;
   align-items: flex-start;
   justify-content: center;
-  @media (max-width: 900px) {
+  @media (max-width: 800px) {
     flex-direction: column;
     align-items: center;
   }
