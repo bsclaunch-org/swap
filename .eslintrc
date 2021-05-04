@@ -11,7 +11,7 @@
     "browser": true,
     "jest": true
   },
-
+  "ignorePatterns": ["/pancakeswap-sdk-v1"],
   "extends": "@pancakeswap-libs/eslint-config-pancake",
   "rules": {
     "no-console": ["warn", { "allow": ["info", "warn", "error"] }],

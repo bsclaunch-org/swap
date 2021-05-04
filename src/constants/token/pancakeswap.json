@@ -13,6 +13,22 @@
     {
       "name": "WBNB Token",
       "symbol": "WBNB",
+      "address": "0xcaa95833d9e5a16883ae3a21643ebcd5ffeae31b",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "https://exchange.pancakeswap.finance/images/coins/0xcaa95833d9e5a16883ae3a21643ebcd5ffeae31b.png"
+    },
+    {
+      "name": "SKYMORE AOKO",
+      "symbol": "SMA",
+      "address": "0x206b76Fc18cED2e929849b583868eDC293dc1e65",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "https://exchange.pancakeswap.finance/images/coins/0x206b76Fc18cED2e929849b583868eDC293dc1e65.png"
+    },
+    {
+      "name": "WBNB Token",
+      "symbol": "WBNB",
       "address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
       "chainId": 56,
       "decimals": 18,
